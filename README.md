@@ -89,4 +89,4 @@ This project is built with modern web technologies and follows Chrome extension 
 
 ## License
 
-TBD
+Apache License 2.0
