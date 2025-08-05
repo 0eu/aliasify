@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+        if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/v')
         with:
           name: aliasify-chrome-extension-${{ github.ref_name }}
           path: dist/
