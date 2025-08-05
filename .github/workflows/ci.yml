@@ -45,10 +45,32 @@ jobs:
             echo "✅ Version consistency check passed: $PACKAGE_VERSION"
           fi
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        if: github.ref == 'refs/heads/main' && startsWith(github.ref, 'refs/tags/v')
+      - name: Create extension zip for release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: create_release_zip
+        run: |
+          cd dist
+          zip -r ../aliasify-chrome-extension-${{ github.ref_name }}.zip .
+
+      - name: Create GitHub Release
+        if: steps.create_release_zip.conclusion == 'success'
+        uses: softprops/action-gh-release@v2
         with:
-          name: aliasify-chrome-extension-${{ github.ref_name }}
-          path: dist/
-          retention-days: 90
+          name: Aliasify ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## 🚀 Aliasify Chrome Extension ${{ github.ref_name }}
+
+            ### Installation Instructions
+            1. Download the `aliasify-chrome-extension-${{ github.ref_name }}.zip` file below
+            2. Extract the zip file to a folder
+            3. Open Chrome and navigate to `chrome://extensions/`
+            4. Enable "Developer mode" using the toggle in the top right
+            5. Click "Load unpacked" and select the extracted folder
+            6. The Aliasify extension should now appear in your extensions!
+          files: |
+            aliasify-chrome-extension-${{ github.ref_name }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
